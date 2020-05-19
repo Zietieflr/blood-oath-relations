@@ -29,11 +29,18 @@ class BloodOath
   end
 
   def string_date_to_number
-    date = blood_oath_day.split('-')
-    date.join('').to_i
+    # Takes date removes '-' with split then returns date as integer
+    blood_oath_day.split('-').join('').to_i
   end
 
   def self.first_oath
     all.min_by(&:string_date_to_number)
+  end
+
+  def self.to_young_message
+    'Unfortunately, this cult has adult ' \
+    'themes we are not sure you are ready for. ' \
+    "\nPlease try again when you come of age and " \
+    'your mind is less maliable to eldritch horror!'
   end
 end

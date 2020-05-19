@@ -3,7 +3,7 @@ require 'pry'
 class Follower
   attr_reader :name, :age
   attr_accessor :life_motto
-  
+
   @@all = []
 
   def initialize(name, age, life_motto = 'Undeclared')
@@ -27,7 +27,7 @@ class Follower
   end
 
   def cults
-    follower_blood_oaths.map(&:cults)
+    follower_blood_oaths.map(&:cults).uniq
   end
 
   def my_cult_count
@@ -35,13 +35,17 @@ class Follower
   end
 
   def join_cult(blood_oath_day, cult)
-    BloodOath.new(blood_oath_day, cult, self)
+    if cult.minimum_age <= age
+      BloodOath.new(blood_oath_day, cult, self)
+    else
+      BloodOath.to_young_message
+    end
   end
 
   def found_cult(blood_oath_day, cult_name, cult_location)
-    new_cult = Cult.new(cult_name, cult_location, blood_oath_day.split('-').first.to_i)
+    year_founded = blood_oath_day.split('-').first.to_i
+    new_cult = Cult.new(cult_name, cult_location, year_founded)
     BloodOath.new(blood_oath_day, new_cult, self)
-    new_cult
   end
 
   def self.of_a_certain_age(youngest_age)
@@ -58,5 +62,14 @@ class Follower
 
   def self.top_ten
     all.max_by(10) { |follower| follower.my_cult_count }
+  end
+
+  def cult_members(cult)
+    BloodOath.all.select { |blood_oath| blood_oath.cult == cult }
+  end
+
+  def fellow_cult_members
+    fellow_cultists = cults.map(&:cult_followers).flatten.uniq
+    fellow_cultists.delete_if { |follower| follower == self }
   end
 end

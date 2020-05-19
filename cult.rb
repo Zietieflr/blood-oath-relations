@@ -4,13 +4,14 @@ class Cult
   @@all = []
 
   attr_reader :name, :location, :founding_year
-  attr_accessor :slogan
+  attr_accessor :slogan, :minimum_age
 
-  def initialize(name, location, founding_year, slogan = 'Undeclared')
+  def initialize(name, location, founding_year, slogan = 'Undeclared', minimum_age = 0)
     @name = name
     @location = location
     @founding_year = founding_year
     @slogan = slogan
+    @minimum_age = minimum_age
 
     save
   end
@@ -24,7 +25,7 @@ class Cult
   end
 
   def cult_blood_oaths
-    BloodOath.all.select { |ritual_components| ritual_components.cults == self }
+    BloodOath.all.select { |blood_oath| blood_oath.cults == self }
   end
 
   def cult_followers
@@ -34,11 +35,14 @@ class Cult
   def recruit_fresh_follower(blood_oath_day, follower_name, follower_age)
     new_follower = Follower.new(follower_name, follower_age)
     BloodOath.new(blood_oath_day, self, new_follower)
-    new_follower
   end
 
   def recruit_follower(blood_oath_day, follower)
-    BloodOath.new(blood_oath_day, self, follower)
+    if minimum_age <= follower.age
+      BloodOath.new(blood_oath_day, self, follower)
+    else
+      BloodOath.to_young_message
+    end
   end
 
   def cult_population

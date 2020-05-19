@@ -30,11 +30,9 @@ BloodOath.new('2002-05-04', interlopers, prudence)
 BloodOath.new('2010-07-26', interlopers, planchette)
 BloodOath.new('2011-09-24', golden_girls, keeper)
 
-motw = keeper.found_cult('1998-01-31', 'Monster of the Week', 'Florida')
-motw.recruit_follower('1999-02-14', anton)
-
-a = [1996, 06, 12]
-b = [2010, 01, 10]
+motw_oath = keeper.found_cult('1998-01-31', 'Monster of the Week', 'Florida')
+motw_oath.cults.minimum_age = 30
+motw_oath.cults.recruit_follower('1999-02-14', anton)
 
 binding.pry
 
