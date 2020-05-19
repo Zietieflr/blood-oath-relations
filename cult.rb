@@ -23,6 +23,14 @@ class Cult
     @@all
   end
 
+  def cult_blood_oaths
+    BloodOath.all.select { |ritual_components| ritual_components.cults == self }
+  end
+
+  def cult_followers
+    cult_blood_oaths.map(&:followers)
+  end
+
   def recruit_fresh_follower(blood_oath_day, follower_name, follower_age)
     new_follower = Follower.new(follower_name, follower_age)
     BloodOath.new(blood_oath_day, self, new_follower)
@@ -34,7 +42,7 @@ class Cult
   end
 
   def cult_population
-    BloodOath.cults.select { |cult| cult == self }.count
+    cult_followers.count
   end
 
   def self.find_by_name(cult_name)
@@ -47,5 +55,30 @@ class Cult
 
   def self.find_by_founding_year(cult_year_founded)
     all.find { |cult| cult.founding_year == cult_year_founded }
+  end
+
+  def average_age
+    cult_followers.sum(&:age) / cult_followers.count.to_f
+  end
+
+  def my_followers_mottos
+    puts cult_followers.map(&:life_motto)
+  end
+
+  def self.least_popular
+    all.min_by(&:cult_population)
+  end
+
+  def self.most_popular
+    all.max_by(&:cult_population)
+  end
+
+  def self.cults_in_same_location
+    location.find_all { |location| location == self.location }
+  end
+
+  def self.most_common_location
+    locations = all.map(&:location)
+    locations.max_by { |location| locations.count(location) }
   end
 end

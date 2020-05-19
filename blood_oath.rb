@@ -27,4 +27,13 @@ class BloodOath
   def self.cults
     all.map(&:cults)
   end
+
+  def string_date_to_number
+    date = blood_oath_day.split('-')
+    date.join('').to_i
+  end
+
+  def self.first_oath
+    all.min_by(&:string_date_to_number)
+  end
 end
